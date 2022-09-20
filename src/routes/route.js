@@ -4,7 +4,10 @@ const user=require('../controllers/userController')
 router.get("/test-me", function (req, res) {
     res.send("My first ever api!")
 })
+
+
 router.post("/createUser",user.createUser)
+router.post("/login",user.login)
 
 
 module.exports = router;

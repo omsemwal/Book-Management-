@@ -1,22 +1,17 @@
 const userModel = require('../models/userModel')
-
-const userModel = require("../model/userModel");
 const jwt = require('jsonwebtoken');
 
  const createUser = async(req,res) => {
- try {
+ try{
+    let {title,name,phone,email,password} = req.body
 
-    let data= req.body
+        if (Object.keys(req.body).length == 0){
+            return res.send({status:false,msg:"for registration user data is required"})
+        }
 
-    let {title,name,phone,email,password} = data
-
-        if (Object.keys(data).length == 0) {
-        return res.send({status:false,msg:"for registration user data is required"})
-       }
-
-    if(!title){
-        res.send({status:false,msg:"title is required for registration"})
-    }
+        if(!title){
+            return res.send({status:false,msg:"title is required for registration"})
+        }
 
     if (!["Mr", "Mrs", "Miss"].includes(title)) {
         return res.send({ status: false, msg: "Title must be ['Mr','Mrs','Miss']" })
@@ -25,8 +20,6 @@ const jwt = require('jsonwebtoken');
     if (!name) {
         return res.send({ status: false, msg: "Enter your  Name" });
     }
-
-    
 
    if(!(/^[\s]*[a-zA-Z]+[\s]*$/).test(name)){
     return res.status(400).send({status:false,msg:"please enter a valid Name"})
@@ -40,6 +33,8 @@ const jwt = require('jsonwebtoken');
     if(!phone){
        return res.send({status:false,msg:"Enter your phone Number"})
     }
+    let existphone = await userModel.findOne({phone:phone})
+    if(existphone){return res.send({status:false,msg:"phone is already exist"})} 
 
     if(!email){
         return res.send({status:false,msg:"Enter your emailId"})
@@ -47,16 +42,19 @@ const jwt = require('jsonwebtoken');
 
     
 
-     if(!(/^[a-z0-9_]{3,}@[a-z]{3,10}.[a-z]{3,6}$/).test(email)){
+     if(!(/^[a-z0-9_]{3,}@[a-z]{3,10}[.]{1}[a-z]{3,6}$/).test(email)){
         return res.send({status:false,msg:"Enter valid Email"})
      }
 
-     let existEmail = await userModel.findone({email:data.email})
+    
+
+     let existEmail = await userModel.findOne({email:email})
     if(existEmail){
 
        return res.send({status:false,msg:"EmailId is already exist"}) 
     }
 
+   
      
 
     if(!(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/).test(password)){          
@@ -77,6 +75,7 @@ const jwt = require('jsonwebtoken');
     res.status(500).send({ status: false, msg: err.message });
 }
 }
+
 
 const login = async function (req, res) {
     try {
@@ -113,8 +112,6 @@ const login = async function (req, res) {
                 .status(400)
                 .send({ status: false, msg: "Password is required" })
         }
-
-        console.log(email, password)
         let data = await userModel.findOne({ email: email, password: password })
 
         if (!data) {
@@ -126,7 +123,7 @@ const login = async function (req, res) {
         let token = await jwt.sign({ id: data._id.toString() }, "functionupiswaywaycoolproject3group9", { expiresIn: '24h' })
 
         res.header({ "x-api-key": token })
-        res.status(200).send({ status: true, msg: "Login Successfull", data: token })
+        res.status(200).send({ status: true, msg: "Login Successful", data: token })
     }
 
     catch (err) {
