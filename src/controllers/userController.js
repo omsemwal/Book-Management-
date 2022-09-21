@@ -6,44 +6,49 @@ const jwt = require('jsonwebtoken');
     let {title,name,phone,email,password} = req.body
 
         if (Object.keys(req.body).length == 0){
-            return res.send({status:false,msg:"for registration user data is required"})
+            return res.status(400).send({status:false,msg:"for registration user data is required"})
         }
 
         if(!title){
-            return res.send({status:false,msg:"title is required for registration"})
+            return res.status(400).send({status:false,msg:"title is required for registration"})
         }
 
     if (!["Mr", "Mrs", "Miss"].includes(title)) {
-        return res.send({ status: false, msg: "Title must be ['Mr','Mrs','Miss']" })
+        return res.status(400).send({ status: false, msg: "Title must be ['Mr','Mrs','Miss']" })
     }
 
     if (!name) {
-        return res.send({ status: false, msg: "Enter your  Name" });
+        return res.status(400).send({ status: false, msg: "Enter your  Name" });
     }
 
    if(!(/^[\s]*[a-zA-Z]+[\s]*$/).test(name)){
-    return res.status(400).send({status:false,msg:"please enter a valid Name"})
+    return res.status(400).send({status:false,msg:"Please enter a valid Name"})
    }
 
     
    if(!(/^[\s]*[6-9]\d{9}[\s]*$/).test(phone)){
-    return res.status(400).send({status:false,msg:"please Enter valid phone Number"})
+    return res.status(400).send({status:false,msg:"Please Enter valid phone Number"})
    }
 
     if(!phone){
-       return res.send({status:false,msg:"Enter your phone Number"})
+       return res.status(400).send({status:false,msg:"Enter your phone Number"})
     }
+
+    if(!password){
+        return res.status(400).send({status:false,msg:"Enter your Password"})
+    }
+
     let existphone = await userModel.findOne({phone:phone})
-    if(existphone){return res.send({status:false,msg:"phone is already exist"})} 
+    if(existphone){return res.status(400).send({status:false,msg:"Phone is already exist"})} 
 
     if(!email){
-        return res.send({status:false,msg:"Enter your emailId"})
+        return res.status(400).send({status:false,msg:"Enter your emailId"})
     }
 
     
 
      if(!(/^[a-z0-9_]{3,}@[a-z]{3,10}[.]{1}[a-z]{3,6}$/).test(email)){
-        return res.send({status:false,msg:"Enter valid Email"})
+        return res.status(400).send({status:false,msg:"Enter valid Email"})
      }
 
     
@@ -51,24 +56,21 @@ const jwt = require('jsonwebtoken');
      let existEmail = await userModel.findOne({email:email})
     if(existEmail){
 
-       return res.send({status:false,msg:"EmailId is already exist"}) 
+       return res.status(400).send({status:false,msg:"EmailId is already exist"}) 
     }
 
    
-     
+    if(!password){
+        return res.status(400).send({status:false,msg:"Enter your Password"})
+    }
 
     if(!(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/).test(password)){          
 
         return res.status(400).send({status:false,msg:"please Enter valid Password"})
        }
-     
-    if(!password){
-        return res.send({status:false,msg:"Enter your Password"})
-    }
-
-
-    let getUserData = await userModel.create(data);
-    return res.status(201).send({ status: true, data: getUserData });
+    
+    let savedData = await userModel.create(req.body);
+    return res.status(201).send({ status: true, data: savedData });
 
 
 } catch (err) {
@@ -77,7 +79,7 @@ const jwt = require('jsonwebtoken');
 }
 
 
-const login = async function (req, res) {
+const login = async (req, res)=> {
     try {
 
         let requestQuery = req.query
