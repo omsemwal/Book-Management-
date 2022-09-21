@@ -7,7 +7,7 @@ const app = express();
 app.use(bodyParser.json());
 
 
-mongoose.connect("mongodb+srv://user_1:password45@cluster0.d0linvl.mongodb.net/group8Database?retryWrites=true&w=majority", {
+mongoose.connect("mongodb+srv://user_1:password45@cluster0.d0linvl.mongodb.net/group-09Database?retryWrites=true&w=majority", {
     useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected"))
