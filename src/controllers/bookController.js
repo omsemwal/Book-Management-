@@ -72,32 +72,69 @@ const reviewmodel = require("../models/reviewModel")
 
 
     const getBook = async function (req, res) {
-
-        requestQuery = req.query
+        try {
+            const filter = { isDeleted: false }
     
-        let { userId, category, subcategory } = requestQuery
+            const queryParams = req.query
+            {
+                const { userId, category, subcategory } = queryParams
+                if (userId) {
+                    if (!mongoose.Types.ObjectId.isValid(userId)) {
+                        return res.status(400).send({ status: false, msg: `this ${userId} user Id is not a valid Id` })
+                    }
+                    filter["userId"] = userId
+                    // filter.userId = userId
+                    console.log(filter)
+                }
     
+                if (category) {
+                    filter['category'] = category
+                }
     
-        if (Object.keys(requestQuery).length == 0) {
-            let book = await bookModel.find({ isDeleted: false }).select({ book_id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, })
-            if (book) {
-                return res.status(200).send({ status: true, data: book })
-            } else {
-                return res.status(404).send({ status: false, msg: "not a valid request" })
-    
+                if (subcategory) {
+                    filter['subcategory'] = subcategory
+                }
             }
+           
+            const books = await bookModel.find(filter).select({ title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 }).collation({ locale: "en" }).sort({ title: 1 })
+    
+            if (Object.keys(books).length == 0)
+                return res.status(404).send({ status: false, msg: "No book found" })
+    
+            res.status(200).send({ status: true, msg: "success", data: books })
+    
         }
-        let final = await bookModel.find({ $in:[{ userId: userId, category: category, subcategory: subcategory }] }, { isDeleted: false })
-        if (!final) {
-            return res.status(404).send({ status: false, msg: "data not found" })
-        } else {
-            return res.status(200).send({ status: true, data: final })
+        catch (err) {
+            console.log(err.message)
+            res.status(500).send({ status: false, Error: err.message })
         }
-    
-    
-    
-    
     }
+    // const getBook = async function (req, res) {
+
+    //     requestQuery = req.query
+    //     let { userId, category, subcategory } = requestQuery
+    
+    //     if (Object.keys(requestQuery).length == 0) {
+    //         let book = await bookModel.find({ isDeleted: false }).select({ book_id: 1, title: 1, excerpt: 1, userId: 1, category: 1, releasedAt: 1, })
+    //         if (book) {
+    //             return res.status(200).send({ status: true, data: book })
+    //         } else {
+    //             return res.status(404).send({ status: false, msg: "not a valid request" })
+    
+    //         }
+    //     }
+    //     let final = await bookModel.find({ $or:[{ userId: userId},{ category: category}, {subcategory: subcategory }] }, { isDeleted: false }).collation({ locale: "en" }).sort({ title: 1 })
+
+    //     if (!final) {
+    //         return res.status(404).send({ status: false, msg: "data not found" })
+    //     } else {
+    //         return res.status(200).send({ status: true, data: final })
+    //     }
+    
+    
+    
+    
+    // }
     
 
 
@@ -105,31 +142,20 @@ const reviewmodel = require("../models/reviewModel")
     const getbooksbyid = async (req,res)=>{
         try {
             let bookid1 = req.params.bookId
-            // if(bookid1.length==0)return res.status(400).send({status:false,msg:"please give book id"})
+            if(!bookid1)return res.status(400).send({status:false,msg:"please give book id"})
             if(!mongoose.Types.ObjectId.isValid(bookid1))return res.status(400).send({status:false,msg:"please enter valid bookid"})
             
-            let book = await bookModel.find({_id:bookid1,isDeleted:false})
-            // book=book.toObject()
-            console.log(book)
-            if(!book)return res.status(404).send({status:false,msg:"no such books present"})
-            //  book =book.toObject()
-            // console.log(book)
+            let book = await bookModel.findById(bookid1)//{_id:bookid1,isDeleted:false}
+            if (!book || book.isDeleted==true)
+            return res.status(404).send({ status: false, message: "No Book Found" })
+            const {title,_id,excerpt,userId,category,reviews,releasedAt}=book
             let review = await reviewmodel.find({bookId:bookid1})
-            
-            // book["review"] =review
+            let result ={title,_id,excerpt,userId,category,reviews,releasedAt,review}
 
-            return res.status(200).send({status:true,data:book})
+            return res.status(200).send({status:true,data:result})
         } catch (error) {
             res.status(500).send({ status: false, msg: error.message });
-    }
-        
-    }
+    }     }
 
 
-    
-    // module.exports .getbooksbyid=getbooksbyid
-    
-
-module.exports.createBook =createBook
-module.exports .getbooksbyid=getbooksbyid
-module.exports .getBook=getBook
+module.exports = {createBook,getbooksbyid,getBook}
