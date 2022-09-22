@@ -31,7 +31,7 @@ Models
   userId: {ObjectId, mandatory, refs to user model},
   ISBN: {string, mandatory, unique},
   category: {string, mandatory},
-  subcategory: [string, mandatory],
+  subcategory: {string, mandatory},
   reviews: {number, default: 0, comment: Holds number of reviews of this book},
   deletedAt: {Date, when the document is deleted}, 
   isDeleted: {boolean, default: false},
@@ -139,7 +139,7 @@ Make sure all the book routes are protected.
 Make sure that only the owner of the books is able to create, edit or delete the book.
 In case of unauthorized access return an appropirate error message.
 Testing
-To test these apis create a new collection in Postman named Project 4 Books Management
+To test these apis create a new collection in Postman named Project 3 Books Management
 Each api should have a new request in this collection
 Each request in the collection should be rightly named. Eg Create user, Create book, Get books etc
 Each member of each team should have their tests in running state

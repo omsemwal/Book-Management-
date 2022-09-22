@@ -62,7 +62,7 @@ const createBook = async function (req, res) {
         }
 
         let createdBook = await bookModel.create(req.body);
-        return res.status(201).send({ status: true, data: createdBook });
+        return res.status(201).send({ status: true,msg:"success", data: createdBook });
 
 
     } catch (err) {
@@ -99,7 +99,7 @@ const getBookByquery = async (req, res) => {
         if (Object.keys(books).length == 0)
             return res.status(404).send({ status: false, msg: "No Such book found" })
 
-        res.status(200).send({ status: true, msg: "success", data: books })
+        res.status(200).send({ status: true, message: 'Books list', data: books })
 
     }
     catch (err) {
@@ -124,8 +124,8 @@ const getbooksbyid = async (req, res) => {
         if (!book || book.isDeleted == true)
             return res.status(404).send({ status: false, message: "No Book Found" })
         const { title, _id, excerpt, userId, category, reviews, releasedAt } = book
-        let review = await reviewmodel.find({ bookId: bookid1 })
-        let result = { title, _id, excerpt, userId, category, reviews, releasedAt, review }
+        let reviewsdata = await reviewmodel.find({ bookId: bookid1 })
+        let result = { title, _id, excerpt, userId, category, reviews, releasedAt, reviewsdata }
 
         return res.status(200).send({ status: true, data: result })
     } catch (error) {
@@ -179,19 +179,26 @@ const updateBook = async (req, res) => {
     }
 };
 
-//=============================================delete======================================================//
 
-// const deleteById =
+const DeletedBook=async function(req,res){
+    try{
+
+        let bookId=req.params.bookId
+        if (!mongoose.Types.ObjectId.isValid(bookId))
+        return res.status(400).send({ status: false, msg: "please enter valid bookid" })
+        const savedata=await bookModel.findById(bookId)
+        if(savedata.isDeleted==true){
+            return res.status(400).send({status:false, msg:"book is already deleted"})
+        }
+
+        const deleteBook=await bookModel.findByIdAndUpdate({_id:bookId},{$set:{isDeleted:true,deletedAt:Date.now()}});
+        return res.status(200).send({status:true, msg:"Deletion of book is completed"})
 
 
+    }catch(error){ res.status(500).send({ status: false, msg: error.message });
+
+    }
+}
 
 
-
-
-
-
-
-
-
-
-module.exports = { createBook, getbooksbyid, getBookByquery, updateBook }
+module.exports = { createBook, getbooksbyid, getBookByquery, updateBook,DeletedBook }

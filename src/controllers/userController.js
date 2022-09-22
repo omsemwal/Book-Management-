@@ -21,7 +21,7 @@ const jwt = require('jsonwebtoken');
         return res.status(400).send({ status: false, msg: "Enter your  Name" });
     }
 
-   if(!(/^[\s]*[a-zA-Z]+[\s]*$/).test(name)){
+   if(!(/^[\s]*[a-zA-Z]+[\s]*$/).test(name)){//
     return res.status(400).send({status:false,msg:"Please enter a valid Name"})
    }
 
@@ -70,7 +70,7 @@ const jwt = require('jsonwebtoken');
        }
     
     let savedData = await userModel.create(req.body);
-    return res.status(201).send({ status: true, data: savedData });
+    return res.status(201).send({ status: true,message: 'Success', data: savedData });
 
 
 } catch (err) {
