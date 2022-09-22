@@ -20,7 +20,7 @@ router.get("/books",auth.authentication,book.getBookByquery)
 
 router.get("/books/:bookId",book.getbooksbyid)
 
-router.put("/books/:bookId",book.updateBook)
+router.put("/books/:bookId",auth.authentication,book.updateBook)
 
 router.delete("/books/:bookId",book.DeletedBook)
 

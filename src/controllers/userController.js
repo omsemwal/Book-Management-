@@ -21,18 +21,19 @@ const jwt = require('jsonwebtoken');
         return res.status(400).send({ status: false, msg: "Enter your  Name" });
     }
 
-   if(!(/^[\s]*[a-zA-Z]+[\s]*$/).test(name)){//
+   if(!(/^[a-zA-Z]*[\s]*[a-zA-Z]*\s?$/).test(name)){//
     return res.status(400).send({status:false,msg:"Please enter a valid Name"})
    }
 
     
-   if(!(/^[\s]*[6-9]\d{9}[\s]*$/).test(phone)){
-    return res.status(400).send({status:false,msg:"Please Enter valid phone Number"})
-   }
+   
 
     if(!phone){
        return res.status(400).send({status:false,msg:"Enter your phone Number"})
     }
+    if(!(/^[\s]*[6-9]\d{9}[\s]*$/).test(phone)){
+        return res.status(400).send({status:false,msg:"Please Enter valid phone Number"})
+       }
 
     if(!password){
         return res.status(400).send({status:false,msg:"Enter your Password"})
@@ -47,7 +48,7 @@ const jwt = require('jsonwebtoken');
 
     
 
-     if(!(/^[a-z0-9_]{3,}@[a-z]{3,10}[.]{1}[a-z]{3,6}$/).test(email)){
+     if(!(/^[a-z0-9_]{1,}@[a-z]{3,10}[.]{1}[a-z]{3}$/).test(email)){
         return res.status(400).send({status:false,msg:"Enter valid Email"})
      }
 
@@ -64,7 +65,7 @@ const jwt = require('jsonwebtoken');
         return res.status(400).send({status:false,msg:"Enter your Password"})
     }
 
-    if(!(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/).test(password)){          
+    if(!(/^[\s]*[0-9a-zA-z]{8,15}[\s]*$/).test(password)){                                              ///^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/
 
         return res.status(400).send({status:false,msg:"please Enter valid Password"})
        }
@@ -111,7 +112,7 @@ const login = async (req, res)=> {
             return res.status(400).send({ msg: "email and password is incorrect" })
         }
 
-        let token = await jwt.sign({ id: data._id.toString() }, "functionupiswaywaycoolproject3group9", { expiresIn: '24h' })
+        let token = await jwt.sign({ id: data._id.toString() }, "functionupiswaywaycoolproject3group9", { expiresIn: '24hr' })
         res.header({ "x-api-key": token })
         res.status(200).send({ status: true, msg: "Login Successful", data: token })
     }
