@@ -15,15 +15,15 @@ router.post("/register",user.createUser)
 router.post("/login",user.login)
 
 //..................BookApi......................
-router.post("/books",book.createBook)
+router.post("/books",auth.authentication,auth.authorisation, book.createBook)
 
 router.get("/books",auth.authentication,book.getBookByquery)
 
 router.get("/books/:bookId",book.getbooksbyid)
 
-router.put("/books/:bookId",auth.authentication,book.updateBook)
+router.put("/books/:bookId",auth.authentication,auth.authorisation,book.updateBook)
 
-router.delete("/books/:bookId",book.DeletedBook)
+router.delete("/books/:bookId",auth.authentication,auth.authorisation,book.DeletedBook)
 //..................ReviewApi..........................
 router.post("/books/:bookId/review",review.reviewBoook)
 
