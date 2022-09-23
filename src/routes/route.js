@@ -28,6 +28,9 @@ router.delete("/books/:bookId",book.DeletedBook)
 router.post("/books/:bookId/review",review.reviewBoook)
 
 router.put("/books/:bookId/review/:reviewId",review.UpdateReview)
+
+router.delete("/books/:bookId/review/:reviewId",review.DeleteReview)
+
 module.exports = router;
 
 

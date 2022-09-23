@@ -117,4 +117,27 @@ const UpdateReview = async (req, res) => {
     }
 }
 
-module.exports={reviewBoook,UpdateReview}
+const DeleteReview = async function(req,res){
+    let bookId=req.params.bookId
+    let reviewId=req.params.reviewId
+
+    let book = await bookModel.findById(bookId)
+    if(!book){
+        return res.satus(400).send({status:false,msg:"book is not present"})
+    }
+
+    let review=await reviewModel.findById(reviewId)
+    
+    if(!review){
+    return res.status(400).send({status:false,msg:"revew is not present"})
+    }else{
+        let data=await reviewModel.findByIdAndUpdate({id:reviewId},{$set:{isDeleted:true}})
+        book.reviews=book.reviews-1
+       let save= await book.save()
+       console.log(save)
+
+    }
+
+}
+
+module.exports={reviewBoook,UpdateReview,DeleteReview}
