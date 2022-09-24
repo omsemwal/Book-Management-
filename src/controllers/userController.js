@@ -21,12 +21,9 @@ const jwt = require('jsonwebtoken');
         return res.status(400).send({ status: false, msg: "Enter your  Name" });
     }
 
-   if(!(/^[a-zA-Z]*[\s]*[a-zA-Z]*\s?$/).test(name)){//
+   if(!(/^[a-zA-Z]*[\s]*[a-zA-Z]*\s?$/).test(name)){
     return res.status(400).send({status:false,msg:"Please enter a valid Name"})
    }
-
-    
-   
 
     if(!phone){
        return res.status(400).send({status:false,msg:"Enter your phone Number"})
@@ -35,9 +32,6 @@ const jwt = require('jsonwebtoken');
         return res.status(400).send({status:false,msg:"Please Enter valid phone Number"})
        }
 
-    if(!password){
-        return res.status(400).send({status:false,msg:"Enter your Password"})
-    }
 
     let existphone = await userModel.findOne({phone:phone})
     if(existphone){return res.status(400).send({status:false,msg:"Phone is already exist"})} 
@@ -109,12 +103,12 @@ const login = async (req, res)=> {
         let data = await userModel.findOne({ email: email, password: password })
 
         if (!data) {
-            return res.status(400).send({ msg: "email and password is incorrect" })
+            return res.status(400).send({status:false, msg: "email and password is incorrect" })
         }
 
         let token = await jwt.sign({ id: data._id.toString() }, "functionupiswaywaycoolproject3group9", { expiresIn: '24hr' })
         res.header({ "x-api-key": token })
-        res.status(200).send({ status: true, msg: "Login Successful", data: token })
+        res.status(200).send({ status: true, message: "Login Successful", data: token })
     }
     catch (err) {
         res.status(500).send({ error: err.message });

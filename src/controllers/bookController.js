@@ -14,12 +14,15 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "for registration user data is required" })
         }
 
-        if (!title) {
-            return res.status(400).send({ status: false, msg: "title must be present" })
+        if (!title||typeof title !== "string") {
+            return res.status(400).send({ status: false, msg: "title must be present only in string" })
         }
 
-        if (!excerpt) {
-            return res.status(400).send({ status: false, msg: "excerpt must be present" })
+        // if(typeof title !== "string") return res.status(400).send({ status: false, msg: "title must be present only in string" })
+           
+
+        if (!excerpt||typeof title !== "string") {
+            return res.status(400).send({ status: false, msg: "excerpt must be present only in string" })
         }
 
 
@@ -27,7 +30,6 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "userId must be present" })
         }
 
-        
             if (!mongoose.Types.ObjectId.isValid(userId)) {
                 return res.status(400).send({ status: false, msg: "Please Enter Valid user Id " })
             }
