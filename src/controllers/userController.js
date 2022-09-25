@@ -2,6 +2,8 @@ const userModel = require('../models/userModel')
 const jwt = require('jsonwebtoken');
 
 
+//==============================createUser=====================================//
+
 const createUser = async (req, res) => {
     try {
         let { title, name, phone, email, password } = req.body
@@ -47,7 +49,7 @@ const createUser = async (req, res) => {
             if (!(/^[a-z0-9_]{1,}@[a-z]{3,10}[.]{1}[a-z]{3}$/).test(email)) {
             return res.status(400).send({ status: false, msg: "Please Enter valid Email" })
         }
-        // if(!isEmpty(email)) return res.status(400).send("Email is empty")
+        
         let existEmail = await userModel.findOne({ email: email })
         if (existEmail) {
 
@@ -57,7 +59,7 @@ const createUser = async (req, res) => {
             return res.status(400).send({ status: false, msg: "Please enter Password for registartion" })
         }
 
-        if (!(/^[\s]*[0-9a-zA-Z@#$%^&*]{8,15}[\s]*$/).test(password)) {                                            //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/
+        if (!(/^[\s]*[0-9a-zA-Z@#$%^&*]{8,15}[\s]*$/).test(password)) {                                            
 
             return res.status(400).send({ status: false, msg: "please Enter valid Password and it's length should be 8-15" })
         }
@@ -71,6 +73,7 @@ const createUser = async (req, res) => {
     }
 }
 
+//==========================================UserLOgin========================//
 
 const login = async (req, res) => {
     try {

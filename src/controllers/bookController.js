@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const reviewmodel = require("../models/reviewModel")
 
 
-
+//==========================================createBook=========================================//
 const createBook = async function (req, res) {
     try {
 
@@ -53,7 +53,6 @@ const createBook = async function (req, res) {
         if(!(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/).test(releasedAt))
               return res.status(400).send("releasedAt date format should be YYYY-MM-DD");
 
-        //------------------------------------------------------------------------------------------------
 
         let existtitle = await bookModel.findOne({ title: title })
         if (existtitle) {
@@ -75,6 +74,7 @@ const createBook = async function (req, res) {
     }
 }
 
+//=================================getByquery============================================//
 
 const getBookByquery = async (req, res) => {
     try {
@@ -115,7 +115,7 @@ const getBookByquery = async (req, res) => {
 
 
 
-
+//==========================================getByuserId==================================================//
 
 const getbooksbyid = async (req, res) => {
     try {
@@ -179,7 +179,7 @@ const updateBook = async (req, res) => {
             return res.status(400).send({ status: false, msg: " this ISBN already exists" })
         }
     
-        // if (!(/^[0-9]{3}([\-])[0-9]{10}$/).test(ISBN)) return res.status(400).send("ISBN must be of 13 digits in [123-1234567890] format");
+        
         let updatedBook = await bookModel.findOneAndUpdate({ _id: bookId }, {
             $set: {
                 title: title,
@@ -198,6 +198,7 @@ const updateBook = async (req, res) => {
 };
 
 
+//========================================================deleteBook===================================//
 const DeletedBook = async function (req, res) {
     try {
 
