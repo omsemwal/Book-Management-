@@ -59,7 +59,7 @@ const createUser = async (req, res) => {
 
         if (!(/^[\s]*[0-9a-zA-Z@#$%^&*]{8,15}[\s]*$/).test(password)) {                                            //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,15}$/
 
-            return res.status(400).send({ status: false, msg: "please Enter valid Password" })
+            return res.status(400).send({ status: false, msg: "please Enter valid Password and it's length should be 8-15" })
         }
 
         let savedData = await userModel.create(req.body);
@@ -104,7 +104,7 @@ const login = async (req, res) => {
             return res.status(400).send({ status: false, msg: "Email or Password is incorrect.Please recheck it" })
         }
 
-        let token = await jwt.sign({ id: data._id.toString() }, "functionupiswaywaycoolproject3group9", { expiresIn: '24hr' })
+        let token = await jwt.sign({ id: data._id.toString() }, "functionupiswaywaycoolproject3group9", { expiresIn: '2hr' })
         res.header({ "x-api-key": token })
         res.status(200).send({ status: true, message: "Login Successful", data: token })
     }

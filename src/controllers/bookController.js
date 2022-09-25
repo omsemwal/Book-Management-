@@ -37,7 +37,8 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "ISBN is mandatory for registering a book" })
         }
 
-        if (!(/^[0-9]{3}([\-])[0-9]{10}$/).test(ISBN)) return res.status(400).send("ISBN must be of 13 digits in [123-1234567890] format");
+        if (!(/^[0-9]{3}([\-])[0-9]{10}$/).test(ISBN)) 
+            return res.status(400).send("ISBN must be of 13 digits in [123-1234567890] format");
         if (!category) {
             return res.status(400).send({ status: false, msg: "Category is mandatory for registering a book" });
         }
@@ -49,6 +50,8 @@ const createBook = async function (req, res) {
         if (!releasedAt) {
             return res.status(400).send({ status: false, msg: "Released At must be present and should be in yyyy-mm-dd" });
         }
+        if(!(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/).test(releasedAt))
+              return res.status(400).send("releasedAt date format should be YYYY-MM-DD");
 
         //------------------------------------------------------------------------------------------------
 
@@ -170,12 +173,13 @@ const updateBook = async (req, res) => {
         if (existtitle) {
             return res.status(400).send({ status: false, msg: "This title  already exists" })
         }
-        if (!(/^[0-9]{3}([\-])[0-9]{10}$/).test(ISBN)) return res.status(400).send("ISBN must be of 13 digits in [123-1234567890] format");
+        
         let existISBN = await bookModel.findOne({ ISBN: ISBN })
         if (existISBN) {
             return res.status(400).send({ status: false, msg: " this ISBN already exists" })
         }
-       
+    
+        // if (!(/^[0-9]{3}([\-])[0-9]{10}$/).test(ISBN)) return res.status(400).send("ISBN must be of 13 digits in [123-1234567890] format");
         let updatedBook = await bookModel.findOneAndUpdate({ _id: bookId }, {
             $set: {
                 title: title,
@@ -184,6 +188,7 @@ const updateBook = async (req, res) => {
                 ISBN: ISBN
             },
         }, { new: true })
+
 
         return res.status(200).send({ status: true, message: "Book list", data: updatedBook })
     }

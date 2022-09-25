@@ -54,8 +54,11 @@ const reviewBoook = async function (req, res) {
     if (!isValid(rating))
         return res.status(400).send({ status: false, msg: "Plese enter Rating" })
 
-    if (!(/^[0-5]$/.test(rating)))
+    if (!(/^[1-5]$/.test(rating)))
         return res.status(400).send({ status: false, msg: "Plese enter rating from 1 to 5 in integer form only" })
+
+        if (!reviewedAt)
+        return res.status(400).send({ status: false, msg: "Please enter reviewedAt" })
 
     let reviewCreated = await reviewModel.create(req.body)
 
@@ -66,7 +69,7 @@ const reviewBoook = async function (req, res) {
     findBook = findBook.toObject()
 
     findBook.reviewsData = printReview
-    res.status(200).send({ status: true, message: "success", data: findBook })
+    res.status(201).send({ status: true, message: "success", data: findBook })
     }catch(err){res.status(500).send({status:false,msg:err.message})}
 }
 
@@ -87,6 +90,9 @@ const UpdateReview = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(bookId)) {
             return res.status(400).send({ status: false, msg: `this  Book Id is not a valid Id` })
         }
+        // if (!reviewId ) {
+            // return res.status(404).send({ status: false, msg: "this reviewId is not match " })
+        // }
        
         if (!mongoose.Types.ObjectId.isValid(reviewId)) {
             return res.status(400).send({ status: false, msg: `this  review id is not a valid Id` })
@@ -128,9 +134,10 @@ const UpdateReview = async (req, res) => {
             },
 
         }, { new: true })
-        if (!reviewId ) {
-            return res.status(404).send({ status: false, msg: "this reviewId is not match " })
-        }
+        
+        // if (!mongoose.Types.ObjectId.isValid(reviewId)) {
+            // return res.status(400).send({ status: false, msg: `this  review id is not a valid Id` })
+        // }
 
          return res.status(200).send({ status: true, message: " review updated", data: updatereview })
 
