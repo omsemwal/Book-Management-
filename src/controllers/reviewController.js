@@ -120,11 +120,13 @@ const UpdateReview = async (req, res) => {
         
        
 
-        let findbookId = await bookModel.findById(bookId).select({ title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 })
+        let findbookId = await bookModel.findById(bookId)
 
         if (!findbookId||findbookId.isDeleted == true) {
             return res.status(404).send({ status: false, msg: "Book is already deleted" })
         }
+        
+        const { title, _id, excerpt, userId, category, reviews, releasedAt } = findbookId
         
 
         let updatereview = await reviewModel.findOneAndUpdate({ _id: reviewId }, {
@@ -139,8 +141,9 @@ const UpdateReview = async (req, res) => {
         // if (!mongoose.Types.ObjectId.isValid(reviewId)) {
             // return res.status(400).send({ status: false, msg: `this  review id is not a valid Id` })
         // }
-        let result ={findbookId}
-        result.reviewdata =updatereview
+        let result = { title, _id, excerpt, userId, category, reviews, releasedAt, reviewsdata }
+
+    
 
          return res.status(200).send({ status: true, message: " review updated", data: result })
 
