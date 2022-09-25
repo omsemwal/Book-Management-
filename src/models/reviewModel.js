@@ -2,6 +2,7 @@ const mongoose = require("mongoose")
 
 const ReviewModel = new mongoose.Schema({
     bookId: {type:mongoose.Schema.Types.ObjectId,required:true, ref:"Book"},
+    
     reviewedBy: {type:String, required:true, default :'Guest',trim:true},
     reviewedAt: {type:Date, default:Date.now()},
     rating: {type:Number, required:true, required:true,trim:true},

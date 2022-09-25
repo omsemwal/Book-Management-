@@ -120,11 +120,12 @@ const UpdateReview = async (req, res) => {
         
        
 
-        let findbookId = await bookModel.findById(bookId)
+        let findbookId = await bookModel.findById(bookId).select({ title: 1, excerpt: 1, userId: 1, category: 1, reviews: 1, releasedAt: 1 })
 
         if (!findbookId||findbookId.isDeleted == true) {
             return res.status(404).send({ status: false, msg: "Book is already deleted" })
         }
+        
 
         let updatereview = await reviewModel.findOneAndUpdate({ _id: reviewId }, {
             $set: {
@@ -138,8 +139,10 @@ const UpdateReview = async (req, res) => {
         // if (!mongoose.Types.ObjectId.isValid(reviewId)) {
             // return res.status(400).send({ status: false, msg: `this  review id is not a valid Id` })
         // }
+        let result ={findbookId}
+        result.reviewdata =updatereview
 
-         return res.status(200).send({ status: true, message: " review updated", data: updatereview })
+         return res.status(200).send({ status: true, message: " review updated", data: result })
 
     }
 
@@ -172,18 +175,19 @@ const DeleteReview = async function(req,res){
 
     let book = await bookModel.findById(bookId)
     if(!book){
-        return res.satus(400).send({status:false,message:"book is not present"})
+        return res.satus(404).send({status:false,message:"book is not present"})
     }
 
     let review=await reviewModel.findById(reviewId)
     
-        if(!review) return res.status(400).send("No review found with this reviewID")
+        if(!review) return res.status(404).send("No review found with this reviewID")
 
         if(review.isDeleted==true) return res.status(400).send("This review has already been deleted.")
  
-        let data=await reviewModel.findByIdAndUpdate({_id:reviewId},{$set:{isDeleted:true}})
+        let data=await reviewModel.findByIdAndUpdate({_id:reviewId},{$set:{isDeleted:true},de})
         book.reviews=book.reviews-1
        let save= await book.save()
+
 
 return res.status(200).send({status:true,message:"This review has been deleted successfully."})
 
