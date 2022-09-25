@@ -7,7 +7,7 @@ const authentication = function (req,res,next){
     try {   
          let token =req.headers["x-api-key"]
          if(!token){
-            return res.status(404).send({status:false,msg:"token must be present"})
+            return res.status(403).send({status:false,msg:"token must be present"})
          }
         jwt.verify(token,"functionupiswaywaycoolproject3group9",function(error,decoded){
             if(error)return res.status(400).send("this token is invslid")
@@ -24,22 +24,26 @@ const authentication = function (req,res,next){
 
 
 
-//===================================================authorisation====================================//
+//===================================================authorisation========================================================================//
 const authorisation = async (req,res,next)=>{
    try {
-const authid =decodedtoken.id
-const authorid = req.body.userId
+const idFromToken =decodedtoken.id
+const userID = req.body.userId
 let bookId = req.params.bookId
-if(authorid){
-   if (!mongoose.Types.ObjectId.isValid(authorid)) {
+if(!userID) return res.status(400).send("Please enter userId");
+if(userID){
+   if (!mongoose.Types.ObjectId.isValid(userID)) {
       return res.status(400).send({ status: false, msg: "Please Enter Valid user Id " })
   }
-   if(authid !==authorid){
-      return res.status(403).send({ status: false, msg: "unauthorized!!user info doesn't match" });
+   if(idFromToken !==userID){
+      return res.status(403).send({ status: false, msg: "Unauthorized Access.Login to move ahead" });
            }else{
                next()
            }
 }
+
+if(!bookId) return res.status(400).send("Plese enter bookID")
+
 if(bookId){
    if (!mongoose.Types.ObjectId.isValid(bookId)) {
       return res.status(400).send({ status: false, msg: "Please Enter Valid book Id " })
@@ -48,8 +52,8 @@ let bookdata = await bookModel.findById(bookId)
 if(!bookdata)return res.status(404).send({status:false,msg:"no book  found"})
 let updateuser = bookdata.userId
 updateuser =updateuser.toString()
-if(authid !==updateuser){
-   return res.status(403).send({ status: false, msg: "unauthorized!!user info doesn't match" });
+if(idFromToken !==updateuser){
+   return res.status(403).send({ status: false, msg: "Unauthorized Access!!!....Please Login to move ahead" });
         }else{
             next()
         }
