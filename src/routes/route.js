@@ -15,7 +15,7 @@ router.post("/register",user.createUser)
 router.post("/login",user.login)
 
 //..................BookApi......................
-router.post("/books",auth.authentication,auth.authorisation, book.createBook)
+router.post("/books",auth.authentication, book.createBook)
 
 router.get("/books",auth.authentication,book.getBookByquery)
 

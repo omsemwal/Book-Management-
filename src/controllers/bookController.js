@@ -7,13 +7,20 @@ const reviewmodel = require("../models/reviewModel")
 //==========================================createBook=========================================//
 const createBook = async function (req, res) {
     try {
-
+        const idFromToken =decodedtoken.id
         let { title, excerpt, userId, ISBN, category, subcategory, releasedAt } = req.body;
+        if(!userId) return res.status(400).send({ status: false, msg: "give user id" })
+           
 
         if (Object.keys(req.body).length == 0) {
             return res.status(400).send({ status: false, msg: "For registering a book there must be some data" })
         }
-
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).send({ status: false, msg: `please enter a valid userID` })
+        }
+        if(idFromToken !==userId){
+            return res.status(403).send({ status: false, msg: "Unauthorized Access you are not authorised" });
+        }
         if (!title || typeof title !== "string") {
             return res.status(400).send({ status: false, msg: "Title is mandatory and it should be in form of String" })
         }
