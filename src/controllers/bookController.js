@@ -18,10 +18,9 @@ const createBook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "Title is mandatory and it should be in form of String" })
         }
 
-        // if(typeof title !== "string") return res.status(400).send({ status: false, msg: "title must be present only in string" })
 
 
-        if (!excerpt || typeof title !== "string") {
+        if (!excerpt || typeof excerpt !== "string") {
             return res.status(400).send({ status: false, msg: "Excerpt is mandatory and must be in String" })
         }
 
@@ -35,20 +34,20 @@ const createBook = async function (req, res) {
         }
 
         if (!ISBN) {
-            return res.status(400).send({ status: false, msg: "ISBN must be mandatory for registering a book" })
+            return res.status(400).send({ status: false, msg: "ISBN is mandatory for registering a book" })
         }
-        
-        if(!(/^[0-9]{3}([\-])[0-9]{10}$/).test(ISBN)) return res.status(400).send("ISBN must be of 13 digits in [123-1234567890] format");
+
+        if (!(/^[0-9]{3}([\-])[0-9]{10}$/).test(ISBN)) return res.status(400).send("ISBN must be of 13 digits in [123-1234567890] format");
         if (!category) {
             return res.status(400).send({ status: false, msg: "Category is mandatory for registering a book" });
         }
 
         if (!subcategory) {
-            return res.status(400).send({ status: false, msg: "Subcategory must be mandatory for registering a book" });
+            return res.status(400).send({ status: false, msg: "Subcategory is mandatory for registering a book" });
         }
 
         if (!releasedAt) {
-            return res.status(400).send({ status: false, msg: "Released At must be present" });
+            return res.status(400).send({ status: false, msg: "Released At must be present and should be in yyyy-mm-dd" });
         }
 
         //------------------------------------------------------------------------------------------------
@@ -124,8 +123,10 @@ const getbooksbyid = async (req, res) => {
             return res.status(400).send({ status: false, msg: "please enter valid bookid" })
 
         let book = await bookModel.findById(bookid1)
+
         if (!book || book.isDeleted == true)
             return res.status(404).send({ status: false, message: "No Book Found" })
+
         const { title, _id, excerpt, userId, category, reviews, releasedAt } = book
         let reviewsdata = await reviewmodel.find({ bookId: bookid1 })
         let result = { title, _id, excerpt, userId, category, reviews, releasedAt, reviewsdata }
@@ -156,25 +157,25 @@ const updateBook = async (req, res) => {
         }
         let findbookId = await bookModel.findById(bookId)
 
+        
+        if (!findbookId) {
+            return res.status(404).send({ status: false, msg: "no book found with this bookId" })
+        }
+
         if (findbookId.isDeleted == true) {
             return res.status(404).send({ status: false, msg: "Book is already deleted" })
         }
 
         let existtitle = await bookModel.findOne({ title: title })
         if (existtitle) {
-            return res.status(400).send({ status: false, msg: "This title is already exist" })
+            return res.status(400).send({ status: false, msg: "This title  already exists" })
         }
-
+        if (!(/^[0-9]{3}([\-])[0-9]{10}$/).test(ISBN)) return res.status(400).send("ISBN must be of 13 digits in [123-1234567890] format");
         let existISBN = await bookModel.findOne({ ISBN: ISBN })
         if (existISBN) {
-            return res.status(400).send({ status: false, msg: "ISBN is already exist" })
+            return res.status(400).send({ status: false, msg: " this ISBN already exists" })
         }
-        let excerptCheck = await bookModel.findById({ _id: bookId }).select({ excerpt: 1 });
-        if (excerpt == excerptCheck.excerpt) {
-            return res.status(400).send("Excerpt already exists or have been updated");
-        }
-        // console.log(excerptCheck.excerpt);
-        // console.log(excerpt);
+       
         let updatedBook = await bookModel.findOneAndUpdate({ _id: bookId }, {
             $set: {
                 title: title,
@@ -204,7 +205,7 @@ const DeletedBook = async function (req, res) {
         }
 
         const deleteBook = await bookModel.findByIdAndUpdate({ _id: bookId }, { $set: { isDeleted: true, deletedAt: Date.now() } });
-        return res.status(200).send({ status: true, message: "Deletion of book is completed" })
+        return res.status(200).send({ status: true, message: "book has been deleted successfully" })
 
 
     } catch (error) {

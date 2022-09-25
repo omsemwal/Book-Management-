@@ -19,7 +19,7 @@ router.post("/books",auth.authentication,auth.authorisation, book.createBook)
 
 router.get("/books",auth.authentication,book.getBookByquery)
 
-router.get("/books/:bookId",book.getbooksbyid)
+router.get("/books/:bookId",auth.authentication,book.getbooksbyid)
 
 router.put("/books/:bookId",auth.authentication,auth.authorisation,book.updateBook)
 
@@ -30,6 +30,11 @@ router.post("/books/:bookId/review",review.reviewBoook)
 router.put("/books/:bookId/review/:reviewId",review.UpdateReview)
 
 router.delete("/books/:bookId/review/:reviewId",review.DeleteReview)
+
+
+router.all("/*", function (req, res) {
+    res.status(400).send({ status: false, message: "Invalid path params" });
+  });
 
 module.exports = router;
 

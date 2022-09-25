@@ -30,19 +30,17 @@ const authorisation = async (req,res,next)=>{
 const idFromToken =decodedtoken.id
 const userID = req.body.userId
 let bookId = req.params.bookId
-if(!userID) return res.status(400).send("Please enter userId");
+
 if(userID){
    if (!mongoose.Types.ObjectId.isValid(userID)) {
       return res.status(400).send({ status: false, msg: "Please Enter Valid user Id " })
   }
    if(idFromToken !==userID){
-      return res.status(403).send({ status: false, msg: "Unauthorized Access.Login to move ahead" });
+      return res.status(403).send({ status: false, msg: "Unauthorized Access" });
            }else{
                next()
            }
 }
-
-if(!bookId) return res.status(400).send("Plese enter bookID")
 
 if(bookId){
    if (!mongoose.Types.ObjectId.isValid(bookId)) {
@@ -53,7 +51,7 @@ if(!bookdata)return res.status(404).send({status:false,msg:"no book  found"})
 let updateuser = bookdata.userId
 updateuser =updateuser.toString()
 if(idFromToken !==updateuser){
-   return res.status(403).send({ status: false, msg: "Unauthorized Access!!!....Please Login to move ahead" });
+   return res.status(403).send({ status: false, msg: "Unauthorized Access!!!...." });
         }else{
             next()
         }

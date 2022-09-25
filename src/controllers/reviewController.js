@@ -59,8 +59,8 @@ const reviewBoook = async function (req, res) {
 
     let reviewCreated = await reviewModel.create(req.body)
 
-    await bookModel.findOneAndUpdate({_id:findBook},{$inc:{reviews:1}},{new:true})
-    findBook.reviews = findBook.reviews + 1
+    // await bookModel.findOneAndUpdate({_id:findBook},{$inc:{reviews:1}},{new:true})
+       findBook.reviews = findBook.reviews + 1
      await findBook.save()
     let printReview = await reviewModel.findOne({ _id: reviewCreated }).select({ __v: 0, createdAt: 0, updatedAt: 0, isDeleted: 0 })
     findBook = findBook.toObject()
@@ -75,10 +75,19 @@ const reviewBoook = async function (req, res) {
 const UpdateReview = async (req, res) => {
     try {
         let bookId = req.params.bookId
+        let reviewId = req.params.reviewId
+        
+        if (!reviewId) {
+            return res.status(400).send({ status: false, msg: "reviewId must be present" })
+        }
+        if (!bookId) {
+            return res.status(400).send({ status: false, msg: "bookId must be present" })
+        }
+
         if (!mongoose.Types.ObjectId.isValid(bookId)) {
             return res.status(400).send({ status: false, msg: `this  Book Id is not a valid Id` })
         }
-        let reviewId = req.params.reviewId
+       
         if (!mongoose.Types.ObjectId.isValid(reviewId)) {
             return res.status(400).send({ status: false, msg: `this  review id is not a valid Id` })
         }
@@ -102,13 +111,7 @@ const UpdateReview = async (req, res) => {
             }
         }
 
-        // if (!reviewId) {
-        //     return res.status(400).send({ status: false, msg: "reviewId must be present" })
-        // }
-        // if (!bookId) {
-        //     return res.status(400).send({ status: false, msg: "bookId must be present" })
-        // }
-
+        
        
 
         let findbookId = await bookModel.findById(bookId)
@@ -123,9 +126,13 @@ const UpdateReview = async (req, res) => {
                 rating: rating,
                 reviewedBy: reviewedBy,
             },
-        }, { new: true })
 
-        return res.status(200).send({ status: true, message: " review updated", data: updatereview })
+        }, { new: true })
+        if (!reviewId ) {
+            return res.status(404).send({ status: false, msg: "this reviewId is not match " })
+        }
+
+         return res.status(200).send({ status: true, message: " review updated", data: updatereview })
 
     }
 
@@ -139,6 +146,23 @@ const DeleteReview = async function(req,res){
     let bookId=req.params.bookId
     let reviewId=req.params.reviewId
 
+    if (!bookId) {
+        return res.status(400).send({ status: false, msg: "bookId is required to delete a Review " })
+    }
+
+    if (!reviewId) {
+        return res.status(400).send({ status: false, msg: "reviewId is required to delete a Review" })
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(bookId)) {
+        return res.status(400).send({ status: false, msg: `this  BookId is not a valid Id` })
+    }
+   
+    if (!mongoose.Types.ObjectId.isValid(reviewId)) {
+        return res.status(400).send({ status: false, msg: `this  reviewId is not a valid Id` })
+    }
+
+
     let book = await bookModel.findById(bookId)
     if(!book){
         return res.satus(400).send({status:false,message:"book is not present"})
@@ -146,9 +170,9 @@ const DeleteReview = async function(req,res){
 
     let review=await reviewModel.findById(reviewId)
     
-if(!review) return res.status(400).send("No review found with this reviewID")
+        if(!review) return res.status(400).send("No review found with this reviewID")
 
-if(review.isDeleted==true) return res.status(400).send("This review has already been deleted.")
+        if(review.isDeleted==true) return res.status(400).send("This review has already been deleted.")
  
         let data=await reviewModel.findByIdAndUpdate({_id:reviewId},{$set:{isDeleted:true}})
         book.reviews=book.reviews-1

@@ -1,6 +1,6 @@
 const userModel = require('../models/userModel')
 const jwt = require('jsonwebtoken');
-const { isEmpty } = require('../validators/validations');
+
 
 const createUser = async (req, res) => {
     try {
@@ -25,9 +25,7 @@ const createUser = async (req, res) => {
             return res.status(400).send({ status: false, msg: "Enter your  Name" });
         }
           
-   
-
-        if (!(/^[a-z]{2,100}$/i.test(name))) {
+         if (!(/^[a-z]{2,100}$/i.test(name))) {
             return res.status(400).send({ status: false, msg: "Please enter a valid Name" })
         }
 
@@ -42,13 +40,11 @@ const createUser = async (req, res) => {
         let existphone = await userModel.findOne({ phone: phone })
         if (existphone) { return res.status(400).send({ status: false, msg: "User with this phone number is already registered." }) }
 
+
         if (!email) {
             return res.status(400).send({ status: false, msg: "Enter your email .Its mandatory for registration!!!" })
         }
-
-
-       
-        if (!(/^[a-z0-9_]{1,}@[a-z]{3,10}[.]{1}[a-z]{3}$/).test(email)) {
+            if (!(/^[a-z0-9_]{1,}@[a-z]{3,10}[.]{1}[a-z]{3}$/).test(email)) {
             return res.status(400).send({ status: false, msg: "Please Enter valid Email" })
         }
         // if(!isEmpty(email)) return res.status(400).send("Email is empty")
