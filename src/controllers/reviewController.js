@@ -90,13 +90,9 @@ const UpdateReview = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(bookId)) {
             return res.status(400).send({ status: false, msg: `this  Book Id is not a valid Id` })
         }
-        // if (!reviewId ) {
-            // return res.status(404).send({ status: false, msg: "this reviewId is not match " })
-        // }
-       
-        if (!mongoose.Types.ObjectId.isValid(reviewId)) {
-            return res.status(400).send({ status: false, msg: `this  review id is not a valid Id` })
-        }
+        let reviewID=await reviewModel.findById(reviewId)
+    
+        if(!reviewID) return res.status(404).send({status:false,msg:"this  reviewId is invalid"})
         const { review, rating, reviewedBy } = req.body
 
         if (Object.keys(req.body).length == 0)
@@ -141,7 +137,7 @@ const UpdateReview = async (req, res) => {
         // if (!mongoose.Types.ObjectId.isValid(reviewId)) {
             // return res.status(400).send({ status: false, msg: `this  review id is not a valid Id` })
         // }
-        let result = { title, _id, excerpt, userId, category, reviews, releasedAt, reviewsdata }
+        let result = { title, _id, excerpt, userId, category, reviews, releasedAt, updatereview }
 
     
 
