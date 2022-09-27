@@ -3,7 +3,10 @@ const userModel = require('../models/userModel');
 const mongoose = require('mongoose');
 const reviewmodel = require("../models/reviewModel")
 
-
+/*
+const isvalid = function(value){
+    if(typeof value =="string")
+}*/
 //==========================================createBook=========================================//
 const createBook = async function (req, res) {
     try {
@@ -21,16 +24,20 @@ const createBook = async function (req, res) {
         if(idFromToken !==userId){
             return res.status(403).send({ status: false, msg: "Unauthorized Access you are not authorised" });
         }
-        if (!title || typeof title !== "string") {
+        if (!title || typeof title !== "string" ||title.trim().length==0) {
             return res.status(400).send({ status: false, msg: "Title is mandatory and it should be in form of String" })
         }
 
-
+        if (!(/^[a-zA-Z0-9.'\-_\s]*$/).test(title)) {
+            return res.status(400).send({ status: false, msg: "Please enter a valid title" })
+        }
 
         if (!excerpt || typeof excerpt !== "string") {
             return res.status(400).send({ status: false, msg: "Excerpt is mandatory and must be in String" })
         }
-
+        if (!(/^[a-zA-Z0-9\s]{3,}*$/).test(excerpt)) {
+            return res.status(400).send({ status: false, msg: "Please enter a valid excerpt" })
+        }
 
         if (!userId) {
             return res.status(400).send({ status: false, msg: "UserId is mandatory for registering a book" })
@@ -171,7 +178,25 @@ const updateBook = async (req, res) => {
         if (!findbookId) {
             return res.status(404).send({ status: false, msg: "no book found with this bookId" })
         }
+        if(title){
+            if(title.trim().length==0) return res.status(400).send({ status: false, msg: "Please enter a valid title" })
+            if (!(/^[a-zA-Z0-9.'\-_\s]*$/).test(title)) {
+                return res.status(400).send({ status: false, msg: "Please enter a valid title" })
+            }
+        }
+        if(ISBN){
+            if(ISBN.trim().length==0) return res.status(400).send({ status: false, msg: "Please enter a valid ISBN" })
+            if (!(/^[0-9]{3}([\-])[0-9]{10}$/).test(ISBN)) 
+            return res.status(400).send("ISBN must be of 13 digits in [123-1234567890] format");
+        }
 
+        if(excerpt){
+            if(excerpt.trim().length==0||typeof excerpt !=="string") return res.status(400).send({ status: false, msg: "Please enter a valid excerpt" })  
+        }
+        if(releasedAt){
+            if(!(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/).test(releasedAt)||releasedAt.trim().length==0||typeof releasedAt=="Date")
+              return res.status(400).send("releasedAt date format should be YYYY-MM-DD");
+        }
         if (findbookId.isDeleted == true) {
             return res.status(404).send({ status: false, msg: "Book is already deleted" })
         }

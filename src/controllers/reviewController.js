@@ -5,11 +5,6 @@ const mongoose = require('mongoose')
 
 
 
-let isValid = function (value) {
-    if (typeof value === 'undefined' || value === null) return false
-    if (typeof value === 'string' && value.trim().length === 0) return false
-    return true
-}
 //===============================createReview===========================================//
 
 const reviewBoook = async function (req, res) {
@@ -45,7 +40,7 @@ const reviewBoook = async function (req, res) {
         }
 
         if (typeof review !== "string") return res.status(400).send({ status: false, msg: "Plese enter valid reviewer name" })
-
+        
         if (!isValid(rating))
             return res.status(400).send({ status: false, msg: "Plese enter Rating" })
 
@@ -56,7 +51,6 @@ const reviewBoook = async function (req, res) {
             return res.status(400).send({ status: false, msg: "Please enter reviewedAt" })
 
         let reviewCreated = await reviewModel.create(req.body)
-
 
         findBook.reviews = findBook.reviews + 1
         await findBook.save()
@@ -85,11 +79,15 @@ const UpdateReview = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(bookId)) {
             return res.status(400).send({ status: false, msg: `this  Book Id is not a valid Id` })
         }
+        if (!mongoose.Types.ObjectId.isValid(reviewId)) {
+            return res.status(400).send({ status: false, msg: `this review Id is not a valid Id` })
+        }
         let reviewID = await reviewModel.findById(reviewId)
 
         if (!reviewID) return res.status(404).send({ status: false, msg: "this  reviewId is invalid" })
         const { review, rating, reviewedBy } = req.body
 
+        if(reviewID.bookId.toString() !==bookId){return res.status(404).send({ status: false, msg: "this  reviewId is not matched with bookid" })}
         if (Object.keys(req.body).length == 0)
             return res.status(400).send({ status: false, msg: "Please Enter some data to upadte a review" })
 
@@ -103,13 +101,10 @@ const UpdateReview = async (req, res) => {
         }
 
         if ((reviewedBy)) {
-            if (!(/^[a-zA-Z]*[\s]*[a-zA-Z]*\s?$/).test(reviewedBy)) {
+            if (!(/^[a-zA-Z0-9]*[\s]*[a-zA-Z0-9]*\s?$/).test(reviewedBy)) {
                 return res.status(400).send({ status: false, msg: "Plese enter valid reviewer name" })
             }
         }
-
-
-
 
         let findbookId = await bookModel.findById(bookId)
 
@@ -118,8 +113,7 @@ const UpdateReview = async (req, res) => {
         }
 
         const { title, _id, excerpt, userId, category, reviews, releasedAt } = findbookId
-
-
+        
         let updatereview = await reviewModel.findOneAndUpdate({ _id: reviewId }, {
             $set: {
                 review: review,
@@ -167,21 +161,20 @@ const DeleteReview = async function (req, res) {
 
 
         let book = await bookModel.findById(bookId)
-        if (!book) {
-            return res.satus(404).send({ status: false, message: "book is not present" })
+        if (!book||book.isDeleted==true) {
+            return res.status(404).send({ status: false, message: "book is not present" })
         }
 
         let review = await reviewModel.findById(reviewId)
+        if(review.bookId.toString() !==bookId){return res.status(404).send({ status: false, msg: "this  reviewId is not matched with bookid" })}
 
         if (!review) return res.status(404).send("No review found with this reviewID")
 
         if (review.isDeleted == true) return res.status(400).send("This review has already been deleted.")
 
-        let data = await reviewModel.findByIdAndUpdate({ _id: reviewId }, { $set: { isDeleted: true }, de })
+        let data = await reviewModel.findByIdAndUpdate({ _id: reviewId }, { $set: { isDeleted: true }})
         book.reviews = book.reviews - 1
         let save = await book.save()
-
-
         return res.status(200).send({ status: true, message: "This review has been deleted successfully." })
 
     } catch (err) {

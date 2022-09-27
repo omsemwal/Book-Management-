@@ -3,6 +3,13 @@ const jwt = require('jsonwebtoken');
 
 
 //==============================createUser=====================================//
+/*let isValid = function (value) {
+    if (typeof value === 'undefined' || value === null) return false
+    if (typeof value === 'string' && value.trim().length === 0&&value === null) return false
+    if(typeof value ==="number" && value.toString().trim.length===0) return false
+    return true
+}*/
+
 
 const createUser = async (req, res) => {
     try {
@@ -12,12 +19,13 @@ const createUser = async (req, res) => {
             return res.status(400).send({ status: false, msg: "for registration user data is required" })
         }
 
- 
-        if (!title) {
+        if (!isValid(title)) {
             return res.status(400).send({ status: false, msg: "title is required for registration" })
         }
-        
-        
+       /* if (!(/^w+{3}$/).test(title)) {
+            return res.status(400).send({ status: false, msg: "Please Enter valid title Number" })
+        }*/
+
 
         if (!["Mr", "Mrs", "Miss"].includes(title)) {
             return res.status(400).send({ status: false, msg: "Title must be ['Mr','Mrs','Miss']" })
@@ -27,7 +35,7 @@ const createUser = async (req, res) => {
             return res.status(400).send({ status: false, msg: "Enter your  Name" });
         }
           
-         if (!(/^[a-z]{2,100}$/i.test(name))) {
+         if (!(/^[a-zA-Z]{2,}(?: [a-zA-Z]+){0,2}$/).test(name)) {
             return res.status(400).send({ status: false, msg: "Please enter a valid Name" })
         }
 
@@ -107,7 +115,7 @@ const login = async (req, res) => {
             return res.status(400).send({ status: false, msg: "Email or Password is incorrect.Please recheck it" })
         }
 
-        let token = await jwt.sign({ id: data._id.toString() }, "functionupiswaywaycoolproject3group9", { expiresIn: '2hr' })
+        let token = await jwt.sign({ id: data._id.toString() }, "functionupiswaywaycoolproject3group9", { expiresIn: '24hr' })
         res.header({ "x-api-key": token })
         res.status(200).send({ status: true, message: "Login Successful", data: token })
     }

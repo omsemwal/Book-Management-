@@ -30,22 +30,7 @@ const authentication = function (req, res, next) {
 const authorisation = async (req,res,next)=>{
    try {
 const idFromToken =decodedtoken.id
-const userID = req.body.userId
 let bookId = req.params.bookId
-
-if(userID){
-   if (!mongoose.Types.ObjectId.isValid(userID)) {
-      return res.status(400).send({ status: false, msg: "Please Enter Valid user Id " })
-  }
-   if(idFromToken !==userID){
-      return res.status(403).send({ status: false, msg: "Unauthorized Access.you are not authorised" });
-           }else{
-               next()
-           }
-}
-
-
-
 if(bookId){
    if (!mongoose.Types.ObjectId.isValid(bookId)) {
       return res.status(400).send({ status: false, msg: "Please Enter Valid book Id " })
@@ -70,3 +55,5 @@ if(idFromToken !==updateuser){
 module.exports.authentication = authentication
 
 module.exports.authorisation = authorisation
+
+
